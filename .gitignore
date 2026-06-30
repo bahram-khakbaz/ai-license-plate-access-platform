@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+ENV/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Runtime data
+data/
+uploads/
+exports/
+logs/
+backups/
+*.db
+*.sqlite
+*.sqlite3
+
+# Captures and media
+captures/
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.avi
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Docker/runtime
+*.log
+tmp/
