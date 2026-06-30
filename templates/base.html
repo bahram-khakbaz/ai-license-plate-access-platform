@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or 'AI License Plate Access Platform' }}</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>AI License Plate Access Platform</h1>
+      <p>Vehicle access control, plate recognition, and gate operations</p>
+    </div>
+    <nav>
+      <a href="/">Dashboard</a>
+      <a href="/scan">Scan</a>
+      <a href="/mobile-entry">Mobile Entry</a>
+      <a href="/manual-entry">Manual Entry</a>
+      <a href="/vehicles">Vehicles</a>
+      <a href="/cameras">Cameras</a>
+      <a href="/logs">Logs</a>
+    </nav>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
