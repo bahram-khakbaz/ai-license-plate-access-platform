@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h2>Traffic Logs</h2>
+  <table>
+    <thead><tr><th>Time</th><th>Plate</th><th>Role</th><th>Source</th><th>Color</th><th>Status</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      <tr><td>{{ r.created_at }}</td><td>{{ r.plate }}</td><td>{{ r.gate_role }}</td><td>{{ r.source }}</td><td>{{ r.plate_color or '-' }}</td><td>{{ r.status or '-' }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
