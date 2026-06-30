@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h2>Manual Traffic Entry</h2>
+  <form method="post" class="form">
+    <label>Plate</label>
+    <input name="plate" required placeholder="12A34567">
+    <label>Gate role</label>
+    <select name="gate_role"><option value="entry">Entry</option><option value="exit">Exit</option></select>
+    <label>Operator</label>
+    <input name="operator_name">
+    <label>Plate color</label>
+    <select name="plate_color"><option>white</option><option>yellow</option><option>green</option><option>red</option><option>blue</option></select>
+    <label>Note</label>
+    <textarea name="note"></textarea>
+    <button class="button">Save Traffic</button>
+  </form>
+</section>
+{% endblock %}
