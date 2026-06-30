@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h2>Plate Scan</h2>
+  <form method="post" enctype="multipart/form-data" class="form">
+    <label>Image</label>
+    <input type="file" name="image" accept="image/*">
+    <label>Plate text override</label>
+    <input name="plate" placeholder="Example: 12A34567">
+    <label>Plate color</label>
+    <select name="plate_color">
+      <option value="white">White</option>
+      <option value="yellow">Yellow</option>
+      <option value="green">Green</option>
+      <option value="red">Red</option>
+      <option value="blue">Blue</option>
+      <option value="black">Black</option>
+    </select>
+    <label>Gate role</label>
+    <select name="gate_role"><option value="entry">Entry</option><option value="exit">Exit</option></select>
+    <label>Note</label>
+    <textarea name="note"></textarea>
+    <button class="button">Scan and Save</button>
+  </form>
+  {% if result %}
+    <div class="result"><b>Result:</b> {{ result }}</div>
+  {% endif %}
+</section>
+{% endblock %}
