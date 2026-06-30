@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel mobile">
+  <h2>Mobile Gate Entry</h2>
+  <form method="post" class="form">
+    <label>Plate</label>
+    <input name="plate" required>
+    <label>Role</label>
+    <select name="gate_role"><option value="entry">Entry</option><option value="exit">Exit</option></select>
+    <label>Operator</label>
+    <input name="operator_name">
+    <label>Color</label>
+    <select name="plate_color"><option>white</option><option>yellow</option><option>green</option></select>
+    <label>Note</label>
+    <textarea name="note"></textarea>
+    <button class="button">Save</button>
+  </form>
+</section>
+{% endblock %}
