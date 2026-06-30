@@ -175,7 +175,7 @@ Use `.env.example` as a safe template for environment configuration.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ai-license-plate-access-platform.git
+git clone https://github.com/bahram-khakbaz/ai-license-plate-access-platform.git
 cd ai-license-plate-access-platform
 ```
 
