@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h2>Vehicles</h2>
+  <form method="post" class="form inline">
+    <input name="plate" placeholder="Plate" required>
+    <input name="driver_name" placeholder="Driver name">
+    <input name="phone" placeholder="Phone">
+    <input name="unit" placeholder="Unit">
+    <input name="vehicle_model" placeholder="Model">
+    <input name="vehicle_color" placeholder="Color">
+    <select name="status"><option value="unknown">Unknown</option><option value="allowed">Allowed</option><option value="review">Review</option></select>
+    <button class="button">Save</button>
+  </form>
+</section>
+<section class="panel">
+  <table>
+    <thead><tr><th>Plate</th><th>Driver</th><th>Unit</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody>{% for v in vehicles %}<tr><td>{{ v.plate }}</td><td>{{ v.driver_name or '-' }}</td><td>{{ v.unit or '-' }}</td><td>{{ v.status or '-' }}</td><td>{{ v.updated_at }}</td></tr>{% endfor %}</tbody>
+  </table>
+</section>
+{% endblock %}
