@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+.github
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# Runtime data
+data/
+uploads/
+exports/
+logs/
+backups/
+*.db
+*.sqlite
+*.sqlite3
+
+# Captured media
+captures/
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.avi
+
+# Local editor files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+*.log
