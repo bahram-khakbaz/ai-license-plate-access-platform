@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h2>Cameras</h2>
+  <form method="post" class="form inline">
+    <input name="name" placeholder="Camera name" required>
+    <input name="stream_url" placeholder="Stream URL" required>
+    <select name="gate_role"><option value="entry">Entry</option><option value="exit">Exit</option></select>
+    <button class="button">Add</button>
+  </form>
+</section>
+<section class="panel">
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Enabled</th><th>Created</th></tr></thead>
+    <tbody>{% for c in cameras %}<tr><td>{{ c.name }}</td><td>{{ c.gate_role }}</td><td>{{ c.enabled }}</td><td>{{ c.created_at }}</td></tr>{% endfor %}</tbody>
+  </table>
+</section>
+{% endblock %}
