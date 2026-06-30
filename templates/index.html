@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h2>Live Access Dashboard</h2>
+    <p>Monitor entries, exits, vehicle records, and important alerts.</p>
+  </div>
+  <a class="button" href="/mobile-entry">Open Mobile Entry</a>
+</section>
+
+<section class="cards" id="stats">
+  <div class="card"><span>Total Traffic</span><strong id="total">-</strong></div>
+  <div class="card"><span>Entries</span><strong id="entries">-</strong></div>
+  <div class="card"><span>Exits</span><strong id="exits">-</strong></div>
+  <div class="card"><span>Vehicles</span><strong id="vehicles">-</strong></div>
+</section>
+
+<section class="grid2">
+  <div class="panel">
+    <h3>Latest Traffic</h3>
+    <div id="latest">Loading...</div>
+  </div>
+  <div class="panel small-panel">
+    <h3>Alerts</h3>
+    <div id="alerts">Loading...</div>
+  </div>
+</section>
+
+<script>
+async function loadStats(){
+  const r = await fetch('/api/dashboard-stats');
+  const d = await r.json();
+  document.getElementById('total').textContent = d.today.total || 0;
+  document.getElementById('entries').textContent = d.today.entries || 0;
+  document.getElementById('exits').textContent = d.today.exits || 0;
+  document.getElementById('vehicles').textContent = d.vehicles.total || 0;
+  document.getElementById('latest').innerHTML = (d.latest || []).map(x => `<div class="row"><b>${x.plate || '-'}</b><span>${x.gate_role || '-'}</span><span>${x.source || '-'}</span></div>`).join('') || 'No traffic yet';
+  document.getElementById('alerts').innerHTML = (d.alerts || []).map(x => `<div class="alert"><b>${x.plate || '-'}</b><span>${x.status || 'unknown'}</span></div>`).join('') || 'No alerts';
+}
+loadStats(); setInterval(loadStats, 10000);
+</script>
+{% endblock %}
