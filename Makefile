@@ -1,8 +1,9 @@
-.PHONY: help init build up down restart logs status backup clean
+.PHONY: help init models build up down restart logs status backup clean
 
 help:
 	@echo "Available commands:"
 	@echo "  make init      - Create local folders and .env from .env.example"
+	@echo "  make models    - Download or verify AI model files"
 	@echo "  make build     - Build Docker image"
 	@echo "  make up        - Start application"
 	@echo "  make down      - Stop application"
@@ -13,8 +14,11 @@ help:
 	@echo "  make clean     - Stop and remove containers"
 
 init:
-	@mkdir -p data uploads exports logs backups
+	@mkdir -p data uploads exports logs backups models
 	@if [ ! -f .env ]; then cp .env.example .env; echo "Created .env from .env.example"; else echo ".env already exists"; fi
+
+models:
+	bash scripts/download-models.sh
 
 build:
 	docker compose build
