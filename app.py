@@ -2,27 +2,44 @@ from flask import Flask, jsonify, render_template, request, redirect, url_for
 
 import storage
 from config import APP_HOST, APP_PORT, SECRET_KEY
-from plate_engine import recognize
+from plate_engine import recognize, status as model_status
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+
 
 @app.before_request
 def init():
     storage.setup()
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/scan', methods=['GET', 'POST'])
 def scan():
     result = None
     if request.method == 'POST':
-        result = recognize(request.files.get('image'), request.form.get('plate'), request.form.get('plate_color'))
+        result = recognize(
+            request.files.get('image'),
+            request.form.get('plate'),
+            request.form.get('plate_color'),
+        )
         if result.get('plate'):
-            storage.save_event({'plate': result['plate'], 'source': 'scan', 'plate_color': result.get('plate_color'), 'image_path': result.get('image_path')})
+            storage.save_event({
+                'plate': result['plate'],
+                'gate_role': request.form.get('gate_role') or 'entry',
+                'source': 'scan',
+                'plate_color': result.get('plate_color'),
+                'score': result.get('confidence'),
+                'image_path': result.get('image_path'),
+                'crop_path': result.get('crop_path'),
+                'note': request.form.get('note'),
+            })
     return render_template('scan.html', result=result)
+
 
 @app.route('/manual-entry', methods=['GET', 'POST'])
 def manual_entry():
@@ -30,6 +47,7 @@ def manual_entry():
         storage.save_event(request.form)
         return redirect(url_for('logs'))
     return render_template('manual_entry.html')
+
 
 @app.route('/mobile-entry', methods=['GET', 'POST'])
 def mobile_entry():
@@ -40,12 +58,14 @@ def mobile_entry():
         return redirect(url_for('logs'))
     return render_template('mobile_entry.html')
 
+
 @app.route('/vehicles', methods=['GET', 'POST'])
 def vehicles():
     if request.method == 'POST':
         storage.save_vehicle(request.form)
         return redirect(url_for('vehicles'))
     return render_template('vehicles.html', vehicles=storage.vehicles())
+
 
 @app.route('/cameras', methods=['GET', 'POST'])
 def cameras():
@@ -54,17 +74,21 @@ def cameras():
         return redirect(url_for('cameras'))
     return render_template('cameras.html', cameras=storage.cameras())
 
+
 @app.route('/logs')
 def logs():
     return render_template('logs.html', rows=storage.events(100))
 
+
 @app.route('/status')
 def status():
-    return jsonify({'ready': True})
+    return jsonify(model_status())
+
 
 @app.route('/api/dashboard-stats')
 def api_dashboard_stats():
     return jsonify(storage.stats())
+
 
 if __name__ == '__main__':
     storage.setup()
