@@ -4,3 +4,5 @@ gunicorn
 opencv-python-headless
 Pillow
 numpy
+ultralytics
+hezar
