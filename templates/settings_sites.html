@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h2>Sites / Locations</h2>
+  <p class="muted">Add each monitored location here. Cameras, vehicles, traffic logs, and dashboard stats can be separated by site.</p>
+  <form method="post" class="form inline">
+    <input name="name" placeholder="Site name" required>
+    <input name="code" placeholder="Code, e.g. main-gate" required>
+    <input name="description" placeholder="Description">
+    <button class="button">Add Site</button>
+  </form>
+</section>
+<section class="panel">
+  <table>
+    <thead><tr><th>Name</th><th>Code</th><th>Description</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody>
+    {% for s in sites %}
+      <tr><td>{{ s.name }}</td><td>{{ s
