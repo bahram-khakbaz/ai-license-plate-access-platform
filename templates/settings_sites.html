@@ -15,4 +15,9 @@
     <thead><tr><th>Name</th><th>Code</th><th>Description</th><th>Status</th><th>Updated</th></tr></thead>
     <tbody>
     {% for s in sites %}
-      <tr><td>{{ s.name }}</td><td>{{ s
+      <tr><td>{{ s.name }}</td><td>{{ s.code }}</td><td>{{ s.description or '-' }}</td><td>{{ 'Active' if s.is_active else 'Inactive' }}</td><td>{{ s.updated_at }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
