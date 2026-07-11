@@ -2,11 +2,17 @@
 {% block content %}
 <section class="panel">
   <h2>Traffic Logs</h2>
+  <form method="get" class="form inline">
+    <select name="site_id"><option value="all">All sites</option>{% for s in sites %}<option value="{{ s.id }}" {% if selected_site_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>{% endfor %}</select>
+    <button class="button">Filter</button>
+  </form>
+</section>
+<section class="panel">
   <table>
-    <thead><tr><th>Time</th><th>Plate</th><th>Role</th><th>Source</th><th>Color</th><th>Status</th></tr></thead>
+    <thead><tr><th>Time</th><th>Site</th><th>Plate</th><th>Role</th><th>Source</th><th>Color</th><th>Status</th></tr></thead>
     <tbody>
     {% for r in rows %}
-      <tr><td>{{ r.created_at }}</td><td>{{ r.plate }}</td><td>{{ r.gate_role }}</td><td>{{ r.source }}</td><td>{{ r.plate_color or '-' }}</td><td>{{ r.status or '-' }}</td></tr>
+      <tr><td>{{ r.created_at }}</td><td>{{ r.site_name }}</td><td>{{ r.plate }}</td><td>{{ r.gate_role }}</td><td>{{ r.source }}</td><td>{{ r.plate_color or '-' }}</td><td>{{ r.status or '-' }}</td></tr>
     {% endfor %}
     </tbody>
   </table>
