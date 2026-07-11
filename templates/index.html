@@ -3,9 +3,20 @@
 <section class="hero">
   <div>
     <h2>Live Access Dashboard</h2>
-    <p>Monitor entries, exits, vehicle records, and important alerts.</p>
+    <p>Monitor entries, exits, vehicle records, and alerts by site.</p>
   </div>
-  <a class="button" href="/mobile-entry">Open Mobile Entry</a>
+  <div class="actions">
+    <a class="button" href="/mobile-entry">Open Mobile Entry</a>
+    <a class="button secondary" href="/settings/sites">Manage Sites</a>
+  </div>
+</section>
+
+<section class="panel">
+  <label>Dashboard Site</label>
+  <select id="siteFilter">
+    <option value="">All Sites</option>
+    {% for s in sites %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+  </select>
 </section>
 
 <section class="cards" id="stats">
@@ -28,15 +39,18 @@
 
 <script>
 async function loadStats(){
-  const r = await fetch('/api/dashboard-stats');
+  const siteId = document.getElementById('siteFilter').value;
+  const url = siteId ? `/api/dashboard-stats?site_id=${encodeURIComponent(siteId)}` : '/api/dashboard-stats';
+  const r = await fetch(url);
   const d = await r.json();
   document.getElementById('total').textContent = d.today.total || 0;
   document.getElementById('entries').textContent = d.today.entries || 0;
   document.getElementById('exits').textContent = d.today.exits || 0;
   document.getElementById('vehicles').textContent = d.vehicles.total || 0;
-  document.getElementById('latest').innerHTML = (d.latest || []).map(x => `<div class="row"><b>${x.plate || '-'}</b><span>${x.gate_role || '-'}</span><span>${x.source || '-'}</span></div>`).join('') || 'No traffic yet';
-  document.getElementById('alerts').innerHTML = (d.alerts || []).map(x => `<div class="alert"><b>${x.plate || '-'}</b><span>${x.status || 'unknown'}</span></div>`).join('') || 'No alerts';
+  document.getElementById('latest').innerHTML = (d.latest || []).map(x => `<div class="row"><b>${x.plate || '-'}</b><span>${x.site_name || '-'}</span><span>${x.gate_role || '-'}</span><span>${x.source || '-'}</span></div>`).join('') || 'No traffic yet';
+  document.getElementById('alerts').innerHTML = (d.alerts || []).map(x => `<div class="alert"><b>${x.plate || '-'}</b><span>${x.site_name || '-'}</span><span>${x.status || 'unknown'}</span></div>`).join('') || 'No alerts';
 }
+document.getElementById('siteFilter').addEventListener('change', loadStats);
 loadStats(); setInterval(loadStats, 10000);
 </script>
 {% endblock %}
