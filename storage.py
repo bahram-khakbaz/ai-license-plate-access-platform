@@ -69,7 +69,7 @@ def clean_plate(value):
 
 
 def site_id(value=None):
-    if value:
+    if value and value != 'all':
         try:
             return int(value)
         except Exception:
@@ -77,11 +77,12 @@ def site_id(value=None):
     return default_site_id()
 
 
-def sites(enabled_only=False):
-    setup_done = DB_PATH.exists()
+def sites(active_only=False, enabled_only=None):
+    if enabled_only is not None:
+        active_only = enabled_only
     with db() as con:
         q = 'SELECT * FROM sites'
-        if enabled_only:
+        if active_only:
             q += ' WHERE enabled=1'
         q += ' ORDER BY id ASC'
         return [dict(r) for r in con.execute(q).fetchall()]
@@ -101,9 +102,12 @@ def save_site(data):
             con.execute('INSERT INTO sites(name, code, description, enabled, created_at, updated_at) VALUES(?,?,?,?,?,?)', (name, code, description, enabled, stamp, stamp))
 
 
-def delete_site(sid):
+def toggle_site(sid):
     with db() as con:
-        con.execute('UPDATE sites SET enabled=0, updated_at=? WHERE id=?', (ts(), sid))
+        row = con.execute('SELECT enabled FROM sites WHERE id=?', (sid,)).fetchone()
+        if row:
+            new_value = 0 if row['enabled'] else 1
+            con.execute('UPDATE sites SET enabled=?, updated_at=? WHERE id=?', (new_value, ts(), sid))
 
 
 def save_vehicle(data):
@@ -126,26 +130,6 @@ def vehicles(site=None):
     sid = site_id(site)
     with db() as con:
         return [dict(r) for r in con.execute('SELECT v.*, s.name site_name FROM vehicles v LEFT JOIN sites s ON s.id=v.site_id WHERE v.site_id=? ORDER BY v.id DESC', (sid,)).fetchall()]
-
-
-def import_vehicles(rows, site=None):
-    sid = site_id(site)
-    imported = 0
-    skipped = 0
-    errors = []
-    for idx, row in enumerate(rows, start=2):
-        data = dict(row)
-        data['site_id'] = sid
-        try:
-            if save_vehicle(data):
-                imported += 1
-            else:
-                skipped += 1
-                errors.append({'row': idx, 'error': 'missing plate'})
-        except Exception as exc:
-            skipped += 1
-            errors.append({'row': idx, 'error': str(exc)})
-    return {'imported': imported, 'skipped': skipped, 'errors': errors[:50]}
 
 
 def save_camera(data):
