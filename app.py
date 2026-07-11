@@ -111,7 +111,7 @@ def site_settings():
     if request.method == 'POST':
         storage.save_site(request.form)
         return redirect(url_for('site_settings'))
-    return render_template('site_settings.html', sites=storage.sites(active_only=False))
+    return render_template('settings_sites.html', sites=storage.sites(active_only=False))
 
 
 @app.route('/settings/sites/<int:site_id>/toggle', methods=['POST'])
