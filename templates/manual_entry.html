@@ -3,6 +3,8 @@
 <section class="panel">
   <h2>Manual Traffic Entry</h2>
   <form method="post" class="form">
+    <label>Site</label>
+    <select name="site_id" required>{% for s in sites %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select>
     <label>Plate</label>
     <input name="plate" required placeholder="12A34567">
     <label>Gate role</label>
