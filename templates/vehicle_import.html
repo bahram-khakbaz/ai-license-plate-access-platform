@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h2>Vehicle Excel Import</h2>
+    <p>Upload driver and vehicle data in bulk instead of entering records one by one.</p>
+  </div>
+  <a class="button" href="/vehicles/template.xlsx">Download Template</a>
+</section>
+
+<section class="panel">
+  <form method="post" enctype="multipart/form-data" class="form">
+    <label>Target Site</label>
+    <select name="site_id" required>
+      {% for s in sites %}<option value="{{ s.id }}" {% if selected_site_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+    </select>
+    <label>Excel File</label>
+    <input type="file" name="file" accept=".xlsx" required>
+    <button class="button">Import Vehicles</button>
+  </form>
+</section>
+
+{% if result %}
+<section class="panel">
+  <h3>Import Result</h3>
+  <div class="cards">
+    <div class="card"><span>Imported</span><strong>{{ result.imported }}</strong></div>
+    <div class="card"><span>Errors</span><strong>{{ result.errors|length }}</strong></div>
+  </div>
+  {% if result.errors %}
+  <table>
+    <thead><tr><th>Row</th><th>Error</th></tr></thead>
+    <tbody>{% for e in result.errors %}<tr><td>{{ e.row }}</td><td>{{ e.error }}</td></tr>{% endfor %}</tbody>
+  </table>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}
