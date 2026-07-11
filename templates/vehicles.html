@@ -1,8 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
+<section class="hero">
+  <div>
+    <h2>Vehicles</h2>
+    <p>Manage vehicles and drivers per site.</p>
+  </div>
+  <div class="actions">
+    <a class="button" href="/vehicles/template.xlsx">Download Excel Template</a>
+    <a class="button secondary" href="/vehicles/import">Import Excel</a>
+  </div>
+</section>
+
 <section class="panel">
-  <h2>Vehicles</h2>
+  <form method="get" class="form inline">
+    <select name="site_id">
+      <option value="">All Sites</option>
+      {% for s in sites %}<option value="{{ s.id }}" {% if selected_site_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+    </select>
+    <button class="button">Filter</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h3>Add or Update Vehicle</h3>
   <form method="post" class="form inline">
+    <select name="site_id">
+      {% for s in sites %}<option value="{{ s.id }}" {% if selected_site_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+    </select>
     <input name="plate" placeholder="Plate" required>
     <input name="driver_name" placeholder="Driver name">
     <input name="phone" placeholder="Phone">
@@ -13,10 +37,11 @@
     <button class="button">Save</button>
   </form>
 </section>
+
 <section class="panel">
   <table>
-    <thead><tr><th>Plate</th><th>Driver</th><th>Unit</th><th>Status</th><th>Updated</th></tr></thead>
-    <tbody>{% for v in vehicles %}<tr><td>{{ v.plate }}</td><td>{{ v.driver_name or '-' }}</td><td>{{ v.unit or '-' }}</td><td>{{ v.status or '-' }}</td><td>{{ v.updated_at }}</td></tr>{% endfor %}</tbody>
+    <thead><tr><th>Site</th><th>Plate</th><th>Driver</th><th>Phone</th><th>Unit</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody>{% for v in vehicles %}<tr><td>{{ v.site_name or '-' }}</td><td>{{ v.plate }}</td><td>{{ v.driver_name or '-' }}</td><td>{{ v.phone or '-' }}</td><td>{{ v.unit or '-' }}</td><td>{{ v.status or '-' }}</td><td>{{ v.updated_at }}</td></tr>{% endfor %}</tbody>
   </table>
 </section>
 {% endblock %}
