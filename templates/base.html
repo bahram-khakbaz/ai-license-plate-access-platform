@@ -11,21 +11,60 @@
     <div>
       <h1>AI License Plate Access Platform</h1>
       <p>Vehicle access control, plate recognition, multi-site monitoring, and gate operations</p>
+      {% if auth_username %}
+        <p class="muted">Signed in as {{ auth_username }} | Role: {{ auth_role }}</p>
+      {% endif %}
     </div>
+
+    {% if auth_role != 'guest' %}
     <nav>
       <a href="/">Dashboard</a>
-      <a href="/scan">Scan</a>
-      <a href="/mobile-entry">Mobile Entry</a>
-      <a href="/manual-entry">Manual Entry</a>
-      <a href="/vehicles">Vehicles</a>
-      <a href="/vehicles/import">Import Excel</a>
-      <a href="/cameras">Cameras</a>
+
+      {% if auth_role in ['admin', 'security'] %}
+        <a href="/scan">Scan</a>
+        <a href="/manual-entry">Manual Entry</a>
+        <a href="/vehicles">Vehicles</a>
+        <a href="/cameras">Cameras</a>
+        <a href="/settings/sites">Sites</a>
+      {% endif %}
+
+      {% if auth_role == 'admin' %}
+        <a href="/mobile-entry">Mobile Entry</a>
+        <a href="/vehicles/import">Import</a>
+        <a href="/status">AI Status</a>
+      {% endif %}
+
       <a href="/logs">Logs</a>
-      <a href="/settings/sites">Sites</a>
+      <a class="danger-link" href="/logout">Logout</a>
     </nav>
+    {% endif %}
   </header>
+
   <main class="container">
     {% block content %}{% endblock %}
   </main>
+
+  <script>
+  (function(){
+    if (typeof window.dxCheckAIStatus !== "function") {
+      window.dxCheckAIStatus = async function(){ return null; };
+    }
+
+    document.addEventListener("click", function(e){
+      const el = e.target.closest ? e.target.closest("a,button,input") : null;
+      if(!el) return;
+
+      const text = (el.textContent || "").trim();
+      const href = el.getAttribute ? (el.getAttribute("href") || "") : "";
+
+      if(href === "/logout" || text.includes("Logout") || text.includes("خروج")){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        window.location.replace("/logout");
+        return false;
+      }
+    }, true);
+  })();
+  </script>
 </body>
 </html>
