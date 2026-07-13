@@ -2,19 +2,26 @@
 {% block content %}
 <section class="hero">
   <div>
-    <h2>Live Access Dashboard</h2>
-    <p>Monitor entries, exits, vehicle records, and alerts by site.</p>
+    <h2>Live Traffic Dashboard</h2>
+    <p>Monitor entries, exits, vehicle records, alerts, and site-based traffic in real time.</p>
   </div>
   <div class="actions">
-    <a class="button" href="/mobile-entry">Open Mobile Entry</a>
-    <a class="button secondary" href="/settings/sites">Manage Sites</a>
+    {% if auth_role in ['admin', 'security'] %}
+      <a class="button" href="/scan">Manual Plate Scan</a>
+      <a class="button secondary" href="/manual-entry">Manual Entry</a>
+      <a class="button secondary" href="/settings/sites">Manage Sites</a>
+    {% endif %}
+    {% if auth_role == 'admin' %}
+      <a class="button secondary" href="/mobile-entry">Mobile Entry</a>
+    {% endif %}
+    <a class="button secondary" href="/logs">Traffic Report</a>
   </div>
 </section>
 
 <section class="panel">
   <label>Dashboard Site</label>
   <select id="siteFilter">
-    <option value="">All Sites</option>
+    <option value="">Default / first active site</option>
     {% for s in sites %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
   </select>
 </section>
@@ -23,6 +30,7 @@
   <div class="card"><span>Total Traffic</span><strong id="total">-</strong></div>
   <div class="card"><span>Entries</span><strong id="entries">-</strong></div>
   <div class="card"><span>Exits</span><strong id="exits">-</strong></div>
+  <div class="card"><span>Manual</span><strong id="manual">-</strong></div>
   <div class="card"><span>Vehicles</span><strong id="vehicles">-</strong></div>
 </section>
 
@@ -40,17 +48,19 @@
 <script>
 async function loadStats(){
   const siteId = document.getElementById('siteFilter').value;
-  const url = siteId ? `/api/dashboard-stats?site_id=${encodeURIComponent(siteId)}` : '/api/dashboard-stats';
-  const r = await fetch(url);
+  const url = siteId ? `/dx/api/live-data?site_id=${encodeURIComponent(siteId)}` : '/dx/api/live-data';
+  const r = await fetch(url, {cache: 'no-store'});
   const d = await r.json();
   document.getElementById('total').textContent = d.today.total || 0;
   document.getElementById('entries').textContent = d.today.entries || 0;
   document.getElementById('exits').textContent = d.today.exits || 0;
+  document.getElementById('manual').textContent = d.today.manual || 0;
   document.getElementById('vehicles').textContent = d.vehicles.total || 0;
-  document.getElementById('latest').innerHTML = (d.latest || []).map(x => `<div class="row"><b>${x.plate || '-'}</b><span>${x.site_name || '-'}</span><span>${x.gate_role || '-'}</span><span>${x.source || '-'}</span></div>`).join('') || 'No traffic yet';
+  document.getElementById('latest').innerHTML = (d.latest || []).map(x => `<div class="row"><b>${x.plate || '-'}</b><span>${x.site_name || '-'}</span><span>${x.gate_role || '-'}</span><span>${x.source || '-'}</span><span>${x.plate_color || 'unknown'}</span></div>`).join('') || 'No traffic yet';
   document.getElementById('alerts').innerHTML = (d.alerts || []).map(x => `<div class="alert"><b>${x.plate || '-'}</b><span>${x.site_name || '-'}</span><span>${x.status || 'unknown'}</span></div>`).join('') || 'No alerts';
 }
 document.getElementById('siteFilter').addEventListener('change', loadStats);
-loadStats(); setInterval(loadStats, 10000);
+loadStats();
+setInterval(loadStats, 10000);
 </script>
 {% endblock %}
