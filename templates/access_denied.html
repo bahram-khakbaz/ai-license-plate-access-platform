@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h2>Access denied</h2>
+  <p class="muted">Your current role does not have access to this section.</p>
+  <p><strong>Role:</strong> {{ role }}</p>
+  <p><strong>Path:</strong> {{ path }}</p>
+  <a class="button" href="/">Back to dashboard</a>
+</section>
+{% endblock %}
