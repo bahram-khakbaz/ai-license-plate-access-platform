@@ -3,15 +3,25 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+.pytest_cache/
 .venv/
 venv/
 env/
 ENV/
 
-# Environment
+# Environment and secrets
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.crt
+
+# Runtime database
+traffic.db
+*.db
+*.sqlite
+*.sqlite3
 
 # Runtime data
 data/
@@ -19,17 +29,23 @@ uploads/
 exports/
 logs/
 backups/
-*.db
-*.sqlite
-*.sqlite3
+app/backups/
+static/captures/
 
 # Captures and media
 captures/
 *.jpg
 *.jpeg
 *.png
+*.webp
 *.mp4
 *.avi
+
+# Model/cache/runtime
+.cache/
+docker-cache/
+models-cache/
+hezar-cache/
 
 # OS/editor
 .DS_Store
@@ -39,4 +55,5 @@ Thumbs.db
 
 # Docker/runtime
 *.log
+*.pid
 tmp/
