@@ -1,20 +1,25 @@
 # AI License Plate Access Platform
 
-A production-ready, Dockerized web platform for vehicle access control, license plate recognition, traffic logging, and security gate operations.
+A production-ready, Dockerized web platform for vehicle access control, license plate recognition, traffic logging, multi-site monitoring, and security gate operations.
 
-This project provides a security operations panel for registering vehicle entries and exits using AI-based license plate recognition from camera streams, uploaded images, manual entries, and mobile-based capture.
-
-> This repository is written as a public-ready project template. It intentionally avoids internal IP addresses, real credentials, private infrastructure names, production camera URLs, and real operational data.
+This repository is maintained as a public-safe project template. It intentionally avoids internal IP addresses, real credentials, private camera URLs, organization-only infrastructure names, and real operational data.
 
 ---
 
-## Overview
+## Current Stable Scope
 
-AI License Plate Access Platform is designed for organizations that need a practical, web-based solution for monitoring and managing vehicle access at gates, parking areas, warehouses, logistics hubs, and secure facilities.
+The project now includes the latest operational changes from the production hardening phase:
 
-The platform combines AI-powered license plate detection, OCR, RTSP camera integration, mobile capture, manual registration, live dashboards, traffic reports, vehicle profiles, and role-based access control.
-
-The goal is to provide an operational and easy-to-use system for security teams without requiring a dedicated desktop application.
+- Multi-site support for dashboards, logs, cameras, vehicles, manual entries, and scan flows.
+- Site management with camera assignment integrated into the same panel.
+- Role-based access control backed by the `users` table.
+- Admin, security, and viewer access profiles.
+- Hardened logout flow that clears the session before old guards can redirect the request.
+- `/dx/whoami` endpoint for verifying the logged-in user and normalized role.
+- CSV vehicle import support in addition to Excel import.
+- Live dashboard API through `/dx/api/live-data`.
+- Site-based traffic report API through `/dx/api/logs`.
+- Compatibility fallback for hidden AI-status UI calls.
 
 ---
 
@@ -22,181 +27,373 @@ The goal is to provide an operational and easy-to-use system for security teams 
 
 ### License Plate Recognition
 
-- Detect license plates from uploaded images
-- Read plate text using OCR
-- Support camera-based recognition from RTSP streams
-- Support mobile photo-based recognition
-- Render a visual plate preview in the UI
-- Detect and display plate background color such as white, yellow, green, red, blue, black, or unknown
+- Detect license plates from uploaded images.
+- Read plate text using OCR.
+- Support camera-based recognition from RTSP streams.
+- Support manual scan and mobile capture flows.
+- Store traffic source as camera, scan, manual, or mobile.
+- Track plate color where available.
+
+### Live Traffic Dashboard
+
+- Site selector for the live dashboard.
+- Today traffic summary.
+- Entry, exit, and manual counts.
+- Vehicle count by site.
+- Latest traffic feed.
+- Alert list for unknown or review vehicles.
+- `/dx/api/live-data` endpoint for live UI refresh.
 
 ### Traffic Registration
 
-- Camera-based entry and exit logging
-- Manual entry by a security operator
-- Mobile-based entry and exit registration
-- Image and plate crop storage
-- Operator name and notes
-- Entry and exit role selection
-- Source tracking: camera, manual, or mobile
-
-### Live Dashboard
-
-- Today traffic summary
-- Entry and exit counts
-- Manual, mobile, and camera traffic visibility
-- Latest traffic table
-- Alert section for important events
-- Live refresh support
-- Visual plate rendering with color support
+- Camera-based entry and exit logging.
+- Manual entry by a security operator.
+- Manual plate scan with AI result confirmation.
+- Mobile entry flow for admin-only fallback use.
+- Operator name, notes, plate color, image path, and crop path fields.
 
 ### Vehicle and Driver Management
 
-- Register vehicles and drivers
-- Store plate, driver name, phone, department, company, vehicle model, and vehicle color
-- Whitelist, blacklist, and unknown status support
-- Open vehicle profile directly from traffic logs
-- Add a new vehicle from a detected traffic record
+- Register vehicles and drivers.
+- Store plate, driver name, phone, unit/department, company, employee code, vehicle model, vehicle color, and access status.
+- Unique vehicle records per site and plate.
+- Excel and CSV import support.
 
-### Security Operations
+### Multi-Site Management
 
-- Mobile fallback when a physical camera is unavailable
-- Manual registration for controlled gate operations
-- Edit incorrect OCR results
-- Keep related image evidence for traffic records
-- Alert level support for unknown or important vehicles
-- Designed for security operators and administrators
-
-### Authentication and Access Control
-
-- Login-protected panel
-- Role-based access control
-- Admin, security, and viewer-style access patterns
-- Admin-only user management
-- Session-based access protection
-
-### Deployment
-
-- Dockerized application
-- Persistent storage for runtime data, uploads, exports, and captures
-- CPU-friendly deployment
-- Suitable for VM-based installation
-- RTSP camera integration through OpenCV and FFmpeg
-
----
-
-## Tech Stack
-
-- Python
-- Flask
-- SQLite
-- OpenCV
-- AI plate detection model
-- OCR model
-- HTML, CSS, and JavaScript
-- Docker and Docker Compose
-- RTSP camera streams
-- Mobile browser camera/file upload support
-
----
-
-## Main Modules
+Site management is available through:
 
 ```text
-app.py                  Web application and API routes
-db.py                   SQLite database layer and migrations
-camera_manager.py       RTSP camera worker and detection loop
-templates/              Web UI templates
-static/                 Static assets, fonts, CSS, images
-data/                   Runtime data and saved captures
-docs/                   Project documentation
+/settings/sites
+/dx/sites
+/site-admin
+```
+
+Capabilities:
+
+- Create sites.
+- Edit site name, code, description, and enabled status.
+- Enable or disable sites.
+- See camera count per site.
+- See traffic count per site.
+- See latest traffic per site.
+- Assign cameras to sites inside the same page.
+
+### Authentication and RBAC
+
+The app uses the `users` table for local authentication and role detection.
+
+Valid roles:
+
+```text
+admin
+security
+viewer
+```
+
+#### Admin
+
+Full access to all panels and APIs.
+
+#### Security / Harasat
+
+Operational access only:
+
+- Live traffic dashboard
+- Manual plate scan
+- Entry/exit cameras
+- Site management
+- Vehicles and drivers
+- Manual traffic entry
+- Traffic report
+
+Security users do not get:
+
+- User/settings management
+- AI status card as a management panel
+- Report API shortcut
+- Mobile entry
+- Vehicle import workflow
+
+#### Viewer
+
+Read-only observation access:
+
+- Live traffic dashboard
+- Traffic report
+
+Viewer users do not get operational actions such as scan, manual entry, vehicles, cameras, site management, users/settings, imports, or admin APIs.
+
+---
+
+## Main Routes
+
+```text
+/                         Live dashboard
+/login                    Login
+/logout                   Hard logout and session clear
+/dx/logout                Logout alias
+/force-logout             Logout alias
+/scan                     Manual AI plate scan
+/manual-entry             Manual traffic entry
+/mobile-entry             Mobile entry flow
+/vehicles                 Vehicle and driver management
+/vehicles/import          Excel/CSV vehicle import
+/cameras                  Entry/exit camera management
+/logs                     Traffic report
+/settings/sites           Site management
+/dx/sites                 Site management alias
+/site-admin               Site management alias
+/status                   AI/model status
+/dx/whoami                Current user and role verification
 ```
 
 ---
 
-## User Flows
+## API Routes
 
-### Camera-based access flow
+```text
+GET /dx/whoami
+GET /dx/api/live-data
+GET /dx/api/logs
+GET /dx/api/sites
+GET /api/dashboard-stats
+GET /api/sites
+GET /api/vehicles
+GET /api/log
+GET /dx/vehicle-import-template.csv
+```
 
-1. Add an RTSP camera in the camera management panel.
-2. The camera worker reads frames from the stream.
-3. Plate detection and OCR run periodically.
-4. A traffic record is created when a valid plate is detected.
-5. The event appears in the live dashboard and traffic reports.
-
-### Mobile security flow
-
-1. The security operator opens the mobile entry page.
-2. The operator takes or uploads a vehicle image.
-3. The platform reads the plate and estimates image quality.
-4. The operator confirms entry or exit.
-5. The record is saved with image evidence and operator name.
-
-### Manual fallback flow
-
-1. The operator opens manual entry.
-2. Plate, entry/exit type, operator, and notes are entered.
-3. A formal traffic record is created without using a camera.
+Access to APIs is controlled by role. `/api/log` is intended for admin-level use; viewer and security users should use the UI and allowed `/dx/api/logs` flow.
 
 ---
 
-## Screens and Panels
+## Database
 
-- Main dashboard
-- Manual plate scan
-- Camera management
-- Vehicle and driver management
-- Manual traffic registration
-- Mobile security registration
-- Traffic reports
-- Vehicle profile
-- User and settings management
-- Live traffic dashboard
+Default SQLite database path:
+
+```text
+data/traffic.db
+```
+
+Main tables:
+
+```text
+users
+sites
+vehicles
+cameras
+events
+```
+
+### users
+
+```text
+id
+username
+password_hash
+role
+full_name
+active
+created
+```
+
+### sites
+
+```text
+id
+name
+code
+description
+enabled
+created_at
+updated_at
+```
+
+### vehicles
+
+```text
+id
+site_id
+plate
+driver_name
+phone
+unit
+company
+employee_code
+vehicle_model
+vehicle_color
+status
+created_at
+updated_at
+```
+
+### cameras
+
+```text
+id
+site_id
+name
+stream_url
+gate_role
+enabled
+created_at
+updated_at
+```
+
+### events
+
+```text
+id
+site_id
+plate
+gate_role
+source
+operator_name
+note
+plate_color
+score
+image_path
+crop_path
+created_at
+```
 
 ---
 
-## Privacy and Security Notes
+## Default Admin User
 
-This repository intentionally does not include:
+On first setup, if the `users` table is empty, the app creates one admin user using environment variables:
 
-- Internal IP addresses
-- Real production credentials
-- Directory service details
-- Organization-specific infrastructure names
-- Passwords or secrets
-- Private camera URLs
-- Real operational data
+```text
+ADMIN_USERNAME
+ADMIN_PASSWORD
+```
 
-Use `.env.example` as a safe template for environment configuration.
+Fallback values for local development only:
+
+```text
+admin@example.com
+change-me-now
+```
+
+Change these values before using the platform in any real environment.
 
 ---
 
 ## Quick Start
 
-### 1. Clone the repository
+### 1. Clone
 
 ```bash
 git clone https://github.com/bahram-khakbaz/ai-license-plate-access-platform.git
 cd ai-license-plate-access-platform
 ```
 
-### 2. Create environment file
+### 2. Configure environment
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and set your own secure values.
+Set at least:
 
-### 3. Start with Docker Compose
+```text
+SECRET_KEY
+ADMIN_USERNAME
+ADMIN_PASSWORD
+DB_PATH
+```
+
+### 3. Start
 
 ```bash
 docker compose up -d --build
 ```
 
-### 4. Open the web panel
+### 4. Open
 
 ```text
 http://localhost
+```
+
+---
+
+## Vehicle Import
+
+Excel template:
+
+```text
+/vehicles/template.xlsx
+```
+
+CSV template:
+
+```text
+/dx/vehicle-import-template.csv
+```
+
+Supported fields:
+
+```text
+Plate
+Driver Name
+Phone
+Unit / Department
+Company
+Employee Code
+Vehicle Model
+Vehicle Color
+Status
+```
+
+---
+
+## Operational Tests
+
+### Status
+
+```bash
+curl -I http://localhost/status
+```
+
+### Login Role
+
+After login, open:
+
+```text
+/dx/whoami
+```
+
+Expected response:
+
+```json
+{
+  "logged_in": true,
+  "username": "...",
+  "db_role": "security",
+  "normalized_role": "security"
+}
+```
+
+### Logout
+
+```bash
+curl -I http://localhost/logout
+```
+
+Correct behavior:
+
+```text
+HTTP/1.1 302 FOUND
+Location: /login
+Set-Cookie: session=; Expires=Thu, 01 Jan 1970...
+```
+
+### Site Management
+
+```bash
+curl -I http://localhost/dx/sites
+curl -I http://localhost/site-admin
 ```
 
 ---
@@ -209,46 +406,53 @@ Runtime-generated data should not be committed to Git:
 data/
 uploads/
 exports/
+logs/
+captures/
+backups/
 *.db
 *.sqlite
-*.log
+*.sqlite3
 .env
 ```
 
-Saved camera frames and plate crops are stored under runtime capture directories.
+Saved camera frames and plate crops should live under runtime capture directories, not inside the repository.
 
 ---
 
 ## Recommended Production Setup
 
-- Use HTTPS behind a reverse proxy
-- Use strong authentication settings
-- Change all default passwords
-- Restrict network access to internal users
-- Keep runtime data outside the application image
-- Back up the SQLite database regularly
-- Monitor disk usage for saved images
-- Use dedicated cameras positioned for plate visibility
+- Use HTTPS behind a reverse proxy.
+- Set a strong `SECRET_KEY`.
+- Change the default admin credentials immediately.
+- Restrict access to internal networks or authenticated users.
+- Keep runtime database and captures outside the application image.
+- Back up the SQLite database regularly.
+- Monitor disk usage for saved images.
+- Do not commit camera URLs, screenshots, database files, or credentials.
 
 ---
 
-## Roadmap
+## Changelog Summary
 
-Planned or recommended improvements:
+### 2026-07-13 - Stable Role Access + Logout
 
-- Audit log for edited traffic records
-- Active vehicle/session dashboard
-- Gate/location selection for mobile entries
-- Advanced camera health monitoring
-- Better image quality scoring
-- Daily security report export
-- PWA mode for mobile security operators
-- Multi-site support
-- Configurable retention policies
-- More accurate plate color classification
+- Added DB-backed role detection from `users` table.
+- Added final RBAC for admin, security, and viewer.
+- Added `/dx/whoami` for role verification.
+- Fixed logout for non-admin roles.
+- Added session-clearing hard logout handler.
+- Added safe fallback for hidden AI status JavaScript calls.
+- Updated dashboard and navigation to be role-aware.
+- Integrated camera assignment into site management.
+- Added `/dx/sites` and `/site-admin` aliases.
+- Added CSV vehicle import template and CSV import support.
 
 ---
 
-## License
+## Designed for
 
-This project is provided as an operational platform template. Choose and add a license file based on your organization's open-source or private repository policy.
+Security gate operations, logistics hubs, parking control, enterprise facilities, and multi-site vehicle access monitoring.
+
+## Designed by
+
+DigiExpress Infrastructure
