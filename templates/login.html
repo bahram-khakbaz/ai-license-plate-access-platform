@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login | AI License Plate Access Platform</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <main class="container auth-container">
+    <section class="panel auth-panel">
+      <h1>AI License Plate Access Platform</h1>
+      <p class="muted">Sign in to continue.</p>
+
+      {% if error %}
+        <div class="alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" class="form">
+        <label>Username</label>
+        <input name="username" autocomplete="username" required>
+
+        <label>Password</label>
+        <input name="password" type="password" autocomplete="current-password" required>
+
+        <button class="button" type="submit">Login</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
