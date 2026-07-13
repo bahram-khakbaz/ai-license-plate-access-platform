@@ -2,21 +2,102 @@
 {% block content %}
 <section class="panel">
   <h2>Sites / Locations</h2>
-  <p class="muted">Add each monitored location here. Cameras, vehicles, traffic logs, and dashboard stats can be separated by site.</p>
+  <p class="muted">Create monitored locations, enable or disable them, and assign cameras to each site from the same page.</p>
+
   <form method="post" class="form inline">
+    <input type="hidden" name="action" value="save_site">
     <input name="name" placeholder="Site name" required>
-    <input name="code" placeholder="Code, e.g. main-gate" required>
+    <input name="code" placeholder="Code, e.g. main-gate">
     <input name="description" placeholder="Description">
     <button class="button">Add Site</button>
   </form>
 </section>
+
 <section class="panel">
+  <h3>Site list</h3>
   <table>
-    <thead><tr><th>Name</th><th>Code</th><th>Description</th><th>Status</th><th>Updated</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Status</th>
+        <th>Cameras</th>
+        <th>Traffic</th>
+        <th>Latest traffic</th>
+        <th>Edit</th>
+        <th>Toggle</th>
+      </tr>
+    </thead>
     <tbody>
     {% for s in sites %}
-      <tr><td>{{ s.name }}</td><td>{{ s.code }}</td><td>{{ s.description or '-' }}</td><td>{{ 'Active' if s.is_active else 'Inactive' }}</td><td>{{ s.updated_at }}</td></tr>
+      <tr>
+        <td>{{ s.name }}</td>
+        <td>{{ s.code or '-' }}</td>
+        <td>{{ 'Active' if s.enabled else 'Inactive' }}</td>
+        <td>{{ s.camera_count }}</td>
+        <td>{{ s.traffic_count }}</td>
+        <td>{{ s.latest_traffic }}</td>
+        <td>
+          <form method="post" class="form inline compact">
+            <input type="hidden" name="action" value="save_site">
+            <input type="hidden" name="site_id" value="{{ s.id }}">
+            <input name="name" value="{{ s.name }}" required>
+            <input name="code" value="{{ s.code or '' }}">
+            <input name="description" value="{{ s.description or '' }}">
+            <input type="hidden" name="enabled" value="{{ s.enabled }}">
+            <button class="button secondary">Save</button>
+          </form>
+        </td>
+        <td>
+          <form method="post">
+            <input type="hidden" name="action" value="toggle_site">
+            <input type="hidden" name="site_id" value="{{ s.id }}">
+            <button class="button secondary">{{ 'Disable' if s.enabled else 'Enable' }}</button>
+          </form>
+        </td>
+      </tr>
     {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="panel">
+  <h3>Assign cameras to sites</h3>
+  <p class="muted">Use this section to connect every entry/exit camera to the correct site.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Camera</th>
+        <th>Role</th>
+        <th>Current Site</th>
+        <th>Assign Site</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for camera in cameras %}
+      <tr>
+        <td>{{ camera.name }}</td>
+        <td>{{ camera.gate_role or '-' }}</td>
+        <td>{{ camera.site_name or '-' }}</td>
+        <td>
+          <form method="post" class="form inline compact">
+            <input type="hidden" name="action" value="assign_camera">
+            <input type="hidden" name="camera_id" value="{{ camera.id }}">
+            <select name="site_id">
+              {% for s in sites %}
+                <option value="{{ s.id }}" {% if camera.site_id|string == s.id|string %}selected{% endif %}>{{ s.name }}</option>
+              {% endfor %}
+            </select>
+            <button class="button">Assign</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4">No cameras have been registered yet.</td>
+      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </section>
