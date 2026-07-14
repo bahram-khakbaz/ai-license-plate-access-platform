@@ -1,41 +1,46 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ title or 'AI License Plate Access Platform' }}</title>
+  <title>{{ title or 'سامانه پلاک‌خوان دیجی‌اکسپرس' }}</title>
   <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
   <header class="topbar">
-    <div>
-      <h1>AI License Plate Access Platform</h1>
-      <p>Vehicle access control, plate recognition, multi-site monitoring, and gate operations</p>
-      {% if auth_username %}
-        <p class="muted">Signed in as {{ auth_username }} | Role: {{ auth_role }}</p>
-      {% endif %}
+    <div class="brand-block">
+      <a class="brand" href="/">
+        <img src="/static/branding/digiexpress-login-logo.svg" alt="DigiExpress">
+      </a>
+      <div>
+        <h1>سامانه پلاک‌خوان دیجی‌اکسپرس</h1>
+        <p>پلتفرم هوشمند مدیریت تردد، تشخیص پلاک، کنترل دسترسی و گزارش‌گیری</p>
+        {% if auth_username %}
+          <p class="muted">{{ auth_username }} | نقش: {{ auth_role }}</p>
+        {% endif %}
+      </div>
     </div>
 
     {% if auth_role != 'guest' %}
     <nav>
-      <a href="/">Dashboard</a>
+      <a href="/">داشبورد زنده</a>
 
       {% if auth_role in ['admin', 'security'] %}
-        <a href="/scan">Scan</a>
-        <a href="/manual-entry">Manual Entry</a>
-        <a href="/vehicles">Vehicles</a>
-        <a href="/cameras">Cameras</a>
-        <a href="/settings/sites">Sites</a>
+        <a href="/scan">اسکن دستی پلاک</a>
+        <a href="/manual-entry">ثبت تردد دستی</a>
+        <a href="/vehicles">خودروها و رانندگان</a>
+        <a href="/cameras">دوربین‌ها</a>
+        <a href="/settings/sites">مدیریت Siteها</a>
       {% endif %}
 
       {% if auth_role == 'admin' %}
-        <a href="/mobile-entry">Mobile Entry</a>
-        <a href="/vehicles/import">Import</a>
-        <a href="/status">AI Status</a>
+        <a href="/mobile-entry">ثبت موبایلی</a>
+        <a href="/vehicles/import">ورود گروهی</a>
+        <a href="/status">وضعیت مدل AI</a>
       {% endif %}
 
-      <a href="/logs">Logs</a>
-      <a class="danger-link" href="/logout">Logout</a>
+      <a href="/logs">گزارش ورود و خروج</a>
+      <a class="danger-link" href="/logout">خروج از سامانه</a>
     </nav>
     {% endif %}
   </header>
