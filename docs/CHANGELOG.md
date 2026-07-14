@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026-07-13 - GitHub Operational Alignment
+
+### Added
+
+- Public-safe DigiExpress branding asset for the login page.
+- Persian/RTL login page aligned with the production UI direction.
+- Persian/RTL base layout and role-aware navigation.
+- Persian live dashboard content matching the operational access model.
+- Compatibility `dx_multi_site.py` module for deployments that still import the historical multi-site extension.
+- Updated README describing the live server / Docker / GitHub sync model.
+
+### Changed
+
+- Repository documentation now reflects the actual operational scope:
+  - AI/OCR plate recognition
+  - Plate color tracking
+  - Live traffic dashboard
+  - Traffic report
+  - Manual entry
+  - Manual plate scan
+  - Vehicle and driver management
+  - RTSP camera management
+  - Site management and camera assignment
+  - RBAC for admin, security and viewer
+  - CSV/Excel import support
+
+- UI language in the public template moved from generic English to DigiExpress Persian terminology.
+- `security` role remains operational and can access dashboard, scan, cameras, sites, vehicles, manual entry and reports.
+- `viewer` role remains read-only and can access only live dashboard and traffic report.
+
+### Fixed
+
+- Removed generic login copy from the GitHub template.
+- Aligned logout labels and navigation naming with the production implementation.
+- Documented runtime files that must never be committed to GitHub.
+
 ## 2026-07-13 - Stable Role Access + Logout
 
 ### Added
