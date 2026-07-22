@@ -1,0 +1,39 @@
+services:
+  iranplate:
+    build:
+      context: .
+      dockerfile: Dockerfile.vm-cpu
+
+    env_file:
+      - .env.ldap
+      - .env.sso
+    image: iranplate-vision:vm-cpu
+    container_name: iranplate-vision
+    restart: unless-stopped
+
+    ports:
+      - "80:5000"
+
+    environment:
+      TZ: Asia/Tehran
+      PYTHONUNBUFFERED: "1"
+      CUDA_VISIBLE_DEVICES: ""
+      OPENCV_FFMPEG_CAPTURE_OPTIONS: "rtsp_transport;tcp"
+      OMP_NUM_THREADS: "10"
+      MKL_NUM_THREADS: "10"
+      NUMEXPR_NUM_THREADS: "10"
+      YOLO_CONFIG_DIR: "/root/.cache/Ultralytics"
+
+    volumes:
+      - ./:/app
+      - ./docker-cache:/root/.cache
+
+    cpus: "10.0"
+    mem_limit: 24g
+    shm_size: "2g"
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"

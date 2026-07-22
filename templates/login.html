@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ورود | سامانه پلاک‌خوان دیجی‌اکسپرس</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  overflow: hidden;
+  background: #061326;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* لایه بک‌گراند کل صفحه */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -70px;
+  background-image: url("/static/branding/login-sso-bg.png?v=20260721-5");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: blur(12px);
+  transform: scale(1.08);
+  opacity: .88;
+  z-index: 0;
+}
+
+/* یکدست‌کردن رنگ پس‌زمینه با تصویر اصلی */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(0, 110, 255, .10), transparent 42%),
+    linear-gradient(90deg, rgba(3,12,28,.50), rgba(3,12,28,.14), rgba(3,12,28,.50)),
+    rgba(3, 12, 28, .20);
+  z-index: 1;
+}
+
+/*
+  عکس اصلی وسط.
+  سایز کنترل شده، ولی لبه‌ها قبل از رسیدن به مرز تصویر محو می‌شوند
+  تا معلوم نشود یک عکس وسط صفحه گذاشته‌ایم.
+*/
+.login-stage {
+  position: relative;
+  z-index: 2;
+  width: min(100vw, calc(100vh * 1.5), 1320px);
+  aspect-ratio: 3 / 2;
+  background-image: url("/static/branding/login-sso-bg.png?v=20260721-5");
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  -webkit-mask-image:
+    radial-gradient(ellipse at center,
+      #000 0%,
+      #000 43%,
+      rgba(0,0,0,.82) 52%,
+      rgba(0,0,0,.38) 63%,
+      rgba(0,0,0,.08) 74%,
+      transparent 84%
+    );
+  mask-image:
+    radial-gradient(ellipse at center,
+      #000 0%,
+      #000 43%,
+      rgba(0,0,0,.82) 52%,
+      rgba(0,0,0,.38) 63%,
+      rgba(0,0,0,.08) 74%,
+      transparent 84%
+    );
+}
+
+/* لینک نامرئی روی دکمه داخل عکس */
+.sso-hitbox {
+  position: absolute;
+  left: 50%;
+  top: 66.2%;
+  transform: translate(-50%, -50%);
+  width: 36.8%;
+  height: 8.2%;
+  border-radius: 24px;
+  z-index: 10;
+  cursor: pointer;
+  text-decoration: none;
+  background: transparent;
+}
+
+.sso-hitbox:focus-visible {
+  outline: 3px solid rgba(0, 210, 255, .95);
+  outline-offset: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (min-width: 1400px) {
+  .login-stage {
+    width: min(100vw, calc(100vh * 1.5), 1320px);
+  }
+}
+
+@media (max-width: 900px) {
+  .login-stage {
+    width: min(150vw, calc(100vh * 1.5));
+    flex-shrink: 0;
+  }
+
+  body::before {
+    filter: blur(10px);
+    opacity: .9;
+  }
+}
+
+@media (max-width: 520px) {
+  .login-stage {
+    width: min(220vw, calc(100vh * 1.5));
+    flex-shrink: 0;
+  }
+
+  .sso-hitbox {
+    top: 66.2%;
+    width: 37.5%;
+    height: 8.8%;
+  }
+
+  body::before {
+    filter: blur(8px);
+    opacity: .92;
+  }
+}
+</style>
+</head>
+
+<body>
+  <main class="login-stage">
+    <h1 class="sr-only">سامانه پلاک‌خوان دیجی‌اکسپرس</h1>
+
+    <a
+      class="sso-hitbox"
+      href="/login?sso=1&next=/"
+      aria-label="ورود با حساب سازمانی"
+      title="ورود با حساب سازمانی"
+    >
+      <span class="sr-only">ورود با حساب سازمانی</span>
+    </a>
+  </main>
+</body>
+</html>
