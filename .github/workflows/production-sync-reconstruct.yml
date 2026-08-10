@@ -25,16 +25,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .sync/part-* | base64 --decode --ignore-garbage > /tmp/production-source.tar.xz
-          xz -t /tmp/production-source.tar.xz
-          tar -tJf /tmp/production-source.tar.xz | tee /tmp/archive-list.txt
+          xz -t .sync/production-text.tar.xz
+          tar -tJf .sync/production-text.tar.xz | tee /tmp/archive-list.txt
 
           if grep -E '(^|/)(\.env($|\.)|.*\.db$|.*\.sqlite3?$|.*\.pem$|.*\.key$)' /tmp/archive-list.txt | grep -vE '(^|/)\.env\.sso\.example$'; then
             echo 'Unsafe file detected in archive' >&2
             exit 1
           fi
 
-          tar -xJf /tmp/production-source.tar.xz -C .
+          tar -xJf .sync/production-text.tar.xz -C .
           rm -rf .sync
           rm -f .github/workflows/production-sync-reconstruct.yml
           find . -type d -name __pycache__ -prune -exec rm -rf {} +
