@@ -1,0 +1,61 @@
+name: Production Source Sync
+
+on:
+  push:
+    branches:
+      - production-sync-2026-08-10
+    paths:
+      - '.github/workflows/production-sync-reconstruct.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sync branch
+        uses: actions/checkout@v4
+        with:
+          ref: production-sync-2026-08-10
+          fetch-depth: 0
+
+      - name: Reconstruct sanitized production source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .sync/part-* | tr -d '\r\n' | base64 --decode > /tmp/production-source.tar.xz
+          xz -t /tmp/production-source.tar.xz
+          tar -tJf /tmp/production-source.tar.xz | tee /tmp/archive-list.txt
+
+          if grep -E '(^|/)(\.env($|\.)|.*\.db$|.*\.sqlite3?$|.*\.pem$|.*\.key$)' /tmp/archive-list.txt | grep -vE '(^|/)\.env\.sso\.example$'; then
+            echo 'Unsafe file detected in archive' >&2
+            exit 1
+          fi
+
+          tar -xJf /tmp/production-source.tar.xz -C .
+          rm -rf .sync
+          rm -f .github/workflows/production-sync-reconstruct.yml
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type f -name '*.pyc' -delete
+
+      - name: Validate Python source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile app.py db.py camera_manager.py dsso_auth.py dx_multi_site.py security_utils.py
+
+      - name: Commit reconstructed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No reconstructed changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Sync sanitized production source'
+          git push origin HEAD:production-sync-2026-08-10
