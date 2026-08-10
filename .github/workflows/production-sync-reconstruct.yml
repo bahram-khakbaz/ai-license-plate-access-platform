@@ -25,7 +25,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .sync/part-* | tr -d '\r\n' | base64 --decode > /tmp/production-source.tar.xz
+          cat .sync/part-* | base64 --decode --ignore-garbage > /tmp/production-source.tar.xz
           xz -t /tmp/production-source.tar.xz
           tar -tJf /tmp/production-source.tar.xz | tee /tmp/archive-list.txt
 
